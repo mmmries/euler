@@ -38,6 +38,7 @@ def find_all_sequences(x,y)
   ret << [[x,y],[x+1,y],[x+2,y],[x+3,y]] if x+3 <= 19
   ret << [[x,y],[x,y+1],[x,y+2],[x,y+3]] if y+3 <= 19
   ret << [[x,y],[x+1,y+1],[x+2,y+2],[x+3,y+3]] if y+3 <= 19 && x+3 <= 19
+  ret << [[x,y],[x-1,y+1],[x-2,y+2],[x-3,y+3]] if x-3 >= 0 && y+3 <= 19
   ret
 end
 
@@ -47,11 +48,12 @@ sequences = RBTree[]
 0.upto(19).each do |x|
   0.upto(19).each do |y|
     find_all_sequences(x,y).each do |seq|
-      p seq
+      #p seq
       seq = seq.map{|coords| grid[coords.last][coords.first] }
-      p seq
+      prod = seq.inject(1){ |prod, num| prod * num  }
+      #puts "#{seq} -> #{prod}"
       if sequences[seq].nil? then
-        sequences[seq] = seq.inject(1){ |prod, num| prod * num  }
+        sequences[seq] = prod
       end
     end
   end
@@ -65,5 +67,8 @@ max = sequences.inject({:product => 0, :sequence => nil}) do |max, keyval|
   max
 end
 
+horizontal = vertical = 17*20
+diagonal = 2*((2*1.upto(16).inject(0){|sum, i| i+sum}) + 17)
+puts "we should have tested (#{horizontal} horizontal) + (#{vertical} vertical) + (#{diagonal} diagonal) = #{horizontal + vertical + diagonal}"
 puts "tested #{sequences.size} sequences"
 puts "max = #{max}"
